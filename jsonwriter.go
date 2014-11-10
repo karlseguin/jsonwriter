@@ -10,7 +10,13 @@ import (
 var (
 	quote        = []byte(`"`)
 	keyStart     = quote
+	null         = []byte("null")
+	_true        = []byte("true")
+	_false       = []byte("false")
+	comma        = []byte(",")
 	keyEnd       = []byte(`":`)
+	startObject  = []byte("{")
+	endObject    = []byte("}")
 	escapedQuote = []byte(`\"`)
 	escapedSlash = []byte(`\\`)
 	escapedBS    = []byte(`\b`)
@@ -21,17 +27,47 @@ var (
 )
 
 type Writer struct {
-	W io.Writer
+	depth int
+	first bool
+	W     io.Writer
+	end   []byte
 }
 
 // Creates a JsonWriter that writes to the provided io.Writer
 func New(w io.Writer) *Writer {
-	return &Writer{w}
+	return &Writer{
+		W:     w,
+		first: true,
+	}
+}
+
+// Starts a nested root object
+func (w *Writer) ORoot() {
+	w.end = endObject
+	w.W.Write(startObject)
+}
+
+// Ends the root (used for both ORoot and ARoots)
+func (w *Writer) ERoot() {
+	w.W.Write(w.end)
+}
+
+// Starts an object with the specified key
+func (w *Writer) SObject(key string) {
+	w.Key(key)
+	w.first = true
+	w.W.Write(startObject)
+}
+
+// Ends the object
+func (w *Writer) EObject() {
+	w.W.Write(endObject)
 }
 
 // Writes a key. The key is placed within quotes and ends
 // with a colon
 func (w *Writer) Key(key string) {
+	w.Separator()
 	w.W.Write(keyStart)
 	w.writeString(key)
 	w.W.Write(keyEnd)
@@ -40,7 +76,18 @@ func (w *Writer) Key(key string) {
 // value can be a string, byte, u?int(8|16|32|64)?, float(32|64)?,
 // time.Time, bool or nil
 func (w *Writer) Value(value interface{}) {
+	if value == nil {
+		w.W.Write(null)
+		return
+	}
+
 	switch t := value.(type) {
+	case bool:
+		if t == true {
+			w.W.Write(_true)
+		} else {
+			w.W.Write(_false)
+		}
 	case uint8:
 		w.W.Write([]byte(strconv.FormatUint(uint64(t), 10)))
 	case uint16:
@@ -79,6 +126,14 @@ func (w *Writer) Value(value interface{}) {
 func (w *Writer) KeyValue(key string, value interface{}) {
 	w.Key(key)
 	w.Value(value)
+}
+
+func (w *Writer) Separator() {
+	if w.first == false {
+		w.W.Write(comma)
+	} else {
+		w.first = false
+	}
 }
 
 func (w *Writer) writeString(s string) {

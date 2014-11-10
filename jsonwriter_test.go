@@ -25,7 +25,6 @@ func (_ *WriterTests) WritesAnInt() {
 	assertValue(int(-59922), "-59922")
 }
 
-
 func (_ *WriterTests) WritesAFloat() {
 	assertValue(float32(1.2393), "1.2393")
 	assertValue(float32(-49493.443), "-49493.44")
@@ -38,6 +37,96 @@ func (_ *WriterTests) WritesAString() {
 	assertValue(`ab"cd`, `"ab\"cd"`)
 	assertValue(`💣`, `"💣"`)
 	assertValue("\\it's\n\tOver\r9000!\\ 💣 💣 💣", `"\\it's\n\tOver\r9000!\\ 💣 💣 💣"`)
+}
+
+func (_ *WriterTests) WritesABool() {
+	assertValue(true, "true")
+	assertValue(false, "false")
+}
+
+func (_ *WriterTests) WritesANull() {
+	assertValue(nil, "null")
+}
+
+func (_ *WriterTests) SimpleObject() {
+	w, b := n()
+	w.ORoot()
+	w.KeyValue("spice", "flow")
+	w.ERoot()
+	Expect(b.String()).To.Equal(`{"spice":"flow"}`)
+}
+
+func (_ *WriterTests) MultiValueObject() {
+	w, b := n()
+	w.ORoot()
+	w.KeyValue("spice", "flow")
+	w.KeyValue("over", 9000)
+	w.ERoot()
+	Expect(b.String()).To.Equal(`{"spice":"flow","over":9000}`)
+}
+
+func (_ *WriterTests) NestedObject1() {
+	w, b := n()
+	w.ORoot()
+	w.KeyValue("spice", "flow")
+	w.KeyValue("over", 9000)
+
+	w.SObject("first")
+	w.KeyValue("afraid", true)
+	w.EObject()
+
+	w.SObject("second")
+	w.KeyValue("a", 1)
+	w.KeyValue("b", 1.01)
+	w.EObject()
+
+	w.ERoot()
+	Expect(b.String()).To.Equal(JSON(`{
+		"spice":"flow",
+		"over":9000,
+		"first": {"afraid": true},
+		"second": {"a": 1, "b": 1.01}
+	}`))
+}
+
+func (_ *WriterTests) NestedObject2() {
+	w, b := n()
+	w.ORoot()
+	w.SObject("first")
+	w.SObject("second")
+	w.SObject("third")
+	w.EObject()
+	w.EObject()
+	w.EObject()
+	w.ERoot()
+	Expect(b.String()).To.Equal(JSON(`{
+		"first":{
+			"second":{
+				"third":{}
+			}
+		}
+	}`))
+}
+
+func (_ *WriterTests) NestedObject3() {
+	w, b := n()
+	w.ORoot()
+	w.SObject("first")
+	w.SObject("second")
+	w.KeyValue("a", true)
+	w.SObject("third")
+	w.EObject()
+	w.EObject()
+	w.EObject()
+	w.ERoot()
+	Expect(b.String()).To.Equal(JSON(`{
+		"first":{
+			"second":{
+				"a": true,
+				"third":{}
+			}
+		}
+	}`))
 }
 
 func assertValue(value interface{}, expected string) {
