@@ -31,7 +31,7 @@ func New(w io.Writer) *Writer {
 
 // Writes a key. The key is placed within quotes and ends
 // with a colon
-func (w *Writer) WriteKey(key string) {
+func (w *Writer) Key(key string) {
 	w.W.Write(keyStart)
 	w.writeString(key)
 	w.W.Write(keyEnd)
@@ -39,7 +39,7 @@ func (w *Writer) WriteKey(key string) {
 
 // value can be a string, byte, u?int(8|16|32|64)?, float(32|64)?,
 // time.Time, bool or nil
-func (w *Writer) WriteValue(value interface{}) {
+func (w *Writer) Value(value interface{}) {
 	switch t := value.(type) {
 	case uint8:
 		w.W.Write([]byte(strconv.FormatUint(uint64(t), 10)))
@@ -76,9 +76,9 @@ func (w *Writer) WriteValue(value interface{}) {
 
 // writes a key: value
 // This is the same as calling WriteKey(key) followe by WriteValue(value)
-func (w *Writer) WriteKeyValue(key string, value interface{}) {
-	w.WriteKey(key)
-	w.WriteValue(value)
+func (w *Writer) KeyValue(key string, value interface{}) {
+	w.Key(key)
+	w.Value(value)
 }
 
 func (w *Writer) writeString(s string) {

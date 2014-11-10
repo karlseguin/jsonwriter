@@ -42,7 +42,7 @@ func (_ *WriterTests) WritesAString() {
 
 func assertValue(value interface{}, expected string) {
 	w, b := n()
-	w.WriteValue(value)
+	w.Value(value)
 	Expect(b.String()).To.Equal(expected)
 }
 
