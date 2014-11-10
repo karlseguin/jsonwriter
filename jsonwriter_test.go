@@ -129,6 +129,29 @@ func (_ *WriterTests) NestedObject3() {
 	}`))
 }
 
+func (_ *WriterTests) RootArray() {
+	w, b := n()
+	w.ARoot()
+	w.Value(1)
+	w.Value("b\"")
+	w.Value(nil)
+	w.ERoot()
+	Expect(b.String()).To.Equal(`[1,"b\"",null]`)
+}
+
+func (_ *WriterTests) NestedArray() {
+	w, b := n()
+	w.ORoot()
+	w.SArray("scores")
+	w.Value(3)
+	w.Value(5)
+	w.EArray()
+	w.ERoot()
+	Expect(b.String()).To.Equal(JSON(`{
+		"scores": [3, 5]
+	}`))
+}
+
 func assertValue(value interface{}, expected string) {
 	w, b := n()
 	w.Value(value)

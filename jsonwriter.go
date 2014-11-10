@@ -17,6 +17,8 @@ var (
 	keyEnd       = []byte(`":`)
 	startObject  = []byte("{")
 	endObject    = []byte("}")
+	startArray   = []byte("[")
+	endArray     = []byte("]")
 	escapedQuote = []byte(`\"`)
 	escapedSlash = []byte(`\\`)
 	escapedBS    = []byte(`\b`)
@@ -29,6 +31,7 @@ var (
 type Writer struct {
 	depth int
 	first bool
+	array bool
 	W     io.Writer
 	end   []byte
 }
@@ -41,14 +44,22 @@ func New(w io.Writer) *Writer {
 	}
 }
 
-// Starts a nested root object
+// Starts a root object
 func (w *Writer) ORoot() {
 	w.end = endObject
 	w.W.Write(startObject)
 }
 
+// Starts an array object
+func (w *Writer) ARoot() {
+	w.end = endArray
+	w.array = true
+	w.W.Write(startArray)
+}
+
 // Ends the root (used for both ORoot and ARoots)
 func (w *Writer) ERoot() {
+	w.array = false
 	w.W.Write(w.end)
 }
 
@@ -64,6 +75,19 @@ func (w *Writer) EObject() {
 	w.W.Write(endObject)
 }
 
+// Starts an array with the specified key
+func (w *Writer) SArray(key string) {
+	w.Key(key)
+	w.first, w.array = true, true
+	w.W.Write(startArray)
+}
+
+// Ends the array
+func (w *Writer) EArray() {
+	w.array = false
+	w.W.Write(endArray)
+}
+
 // Writes a key. The key is placed within quotes and ends
 // with a colon
 func (w *Writer) Key(key string) {
@@ -76,6 +100,10 @@ func (w *Writer) Key(key string) {
 // value can be a string, byte, u?int(8|16|32|64)?, float(32|64)?,
 // time.Time, bool or nil
 func (w *Writer) Value(value interface{}) {
+	if w.array {
+		w.Separator()
+	}
+
 	if value == nil {
 		w.W.Write(null)
 		return
