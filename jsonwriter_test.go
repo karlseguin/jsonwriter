@@ -183,6 +183,39 @@ func (_ *WriterTests) AlternativeSyntaxObject() {
 	}`))
 }
 
+func (_ *WriterTests) ArrayObject() {
+	w, b := n()
+
+	w.RootObject(func() {
+		w.Array("scores", func() {
+			w.ArrayObject(func() {
+				w.KeyValue("points", 32)
+			})
+		})
+	})
+
+	Expect(b.String()).To.Equal(JSON(`{
+		"scores":[{"points":32}]
+	}`))
+}
+
+func (_ *WriterTests) ArrayObject2() {
+	w, b := n()
+
+	w.RootObject(func() {
+		w.Array("scores", func() {
+			w.ArrayObject(func() {
+				w.KeyValue("points", 32)
+			})
+			w.Value(nil)
+		})
+	})
+
+	Expect(b.String()).To.Equal(JSON(`{
+		"scores":[{"points":32}, null]
+	}`))
+}
+
 func (_ *WriterTests) AlternativeSyntaxArray() {
 	w, b := n()
 
@@ -194,7 +227,6 @@ func (_ *WriterTests) AlternativeSyntaxArray() {
 
 	Expect(b.String()).To.Equal(JSON(`[1.2, false, "\n"]`))
 }
-
 
 func assertValue(value interface{}, expected string) {
 	w, b := n()

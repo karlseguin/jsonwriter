@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"unicode/utf8"
 	"time"
+	"unicode/utf8"
 )
 
 var (
@@ -67,6 +67,15 @@ func (w *Writer) Array(key string, f func()) {
 	w.SArray(key)
 	f()
 	w.EArray()
+}
+
+func (w *Writer) ArrayObject(f func()) {
+	w.first = true
+	w.array = false
+	w.W.Write(startObject)
+	f()
+	w.W.Write(endObject)
+	w.array = true
 }
 
 // Starts a root object

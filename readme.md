@@ -31,6 +31,7 @@ writer.RootObject(func(){
 * `Value(value interface)` - Write the value (only useful within an array)
 * `Object(key string, nest func())` - Start a nested object
 * `Array(key string, nest func())` - Start an array
+* `ArrayObject(nest func())` - Used to place an object within an array
 
 # Misc
 
