@@ -76,7 +76,7 @@ func (_ *WriterTests) NestedObject1() {
 	w.EObject()
 
 	w.SObject("second")
-	w.KeyValue("a", 1)
+	w.KeyValue("a", byte(1))
 	w.KeyValue("b", 1.01)
 	w.EObject()
 
@@ -157,7 +157,7 @@ func (_ *WriterTests) AlternativeSyntaxObject() {
 
 	w.RootObject(func() {
 		w.KeyValue("power", 9000)
-		w.Array("scores", func(){
+		w.Array("scores", func() {
 			w.Value(1)
 			w.Value(true)
 			w.Value(nil)

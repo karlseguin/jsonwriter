@@ -50,7 +50,6 @@ func (w *Writer) RootObject(f func()) {
 	w.ERoot()
 }
 
-
 func (w *Writer) RootArray(f func()) {
 	w.ARoot()
 	f()
