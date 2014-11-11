@@ -31,3 +31,7 @@ writer.RootObject(func(){
 * `Value(value interface)` - Write the value (only useful within an array)
 * `Object(key string, nest func())` - Start a nested object
 * `Array(key string, nest func())` - Start an array
+
+# Misc
+
+The [Typed](https://github.com/karlseguin/typed) library provides the opposite functionality: a lightweight approaching to reading JSON data.
