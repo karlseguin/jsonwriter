@@ -50,6 +50,13 @@ func (w *Writer) RootObject(f func()) {
 	w.ERoot()
 }
 
+
+func (w *Writer) RootArray(f func()) {
+	w.ARoot()
+	f()
+	w.ERoot()
+}
+
 func (w *Writer) Object(key string, f func()) {
 	w.SObject(key)
 	f()
