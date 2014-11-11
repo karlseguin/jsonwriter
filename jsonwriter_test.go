@@ -4,6 +4,7 @@ import (
 	"bytes"
 	. "github.com/karlseguin/expect"
 	"testing"
+	"time"
 )
 
 type WriterTests struct{}
@@ -46,6 +47,10 @@ func (_ *WriterTests) WritesABool() {
 
 func (_ *WriterTests) WritesANull() {
 	assertValue(nil, "null")
+}
+
+func (_ *WriterTests) WritesATime() {
+	assertValue(time.Unix(1415677601, 9), `"2014-11-11T10:46:41.000000009+07:00"`)
 }
 
 func (_ *WriterTests) SimpleObject() {
@@ -189,6 +194,7 @@ func (_ *WriterTests) AlternativeSyntaxArray() {
 
 	Expect(b.String()).To.Equal(JSON(`[1.2, false, "\n"]`))
 }
+
 
 func assertValue(value interface{}, expected string) {
 	w, b := n()

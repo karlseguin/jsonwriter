@@ -5,6 +5,7 @@ import (
 	"io"
 	"strconv"
 	"unicode/utf8"
+	"time"
 )
 
 var (
@@ -167,6 +168,10 @@ func (w *Writer) Value(value interface{}) {
 	case string:
 		w.W.Write(quote)
 		w.writeString(t)
+		w.W.Write(quote)
+	case time.Time:
+		w.W.Write(quote)
+		w.writeString(t.Format(time.RFC3339Nano))
 		w.W.Write(quote)
 	default:
 		panic(fmt.Sprintf("unsuported valued type %v", value))
