@@ -152,6 +152,32 @@ func (_ *WriterTests) NestedArray() {
 	}`))
 }
 
+func (_ *WriterTests) AlternativeSyntax() {
+	w, b := n()
+
+	w.RootObject(func() {
+		w.KeyValue("power", 9000)
+		w.Array("scores", func(){
+			w.Value(1)
+			w.Value(true)
+			w.Value(nil)
+		})
+		w.Object("atreides", func() {
+			w.KeyValue("name", "leto")
+			w.KeyValue("sister", "ghanima")
+		})
+	})
+
+	Expect(b.String()).To.Equal(JSON(`{
+		"power": 9000,
+		"scores":[1, true, null],
+		"atreides": {
+			"name": "leto",
+			"sister": "ghanima"
+		}
+	}`))
+}
+
 func assertValue(value interface{}, expected string) {
 	w, b := n()
 	w.Value(value)

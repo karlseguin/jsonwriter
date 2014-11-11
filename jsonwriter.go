@@ -44,6 +44,24 @@ func New(w io.Writer) *Writer {
 	}
 }
 
+func (w *Writer) RootObject(f func()) {
+	w.ORoot()
+	f()
+	w.ERoot()
+}
+
+func (w *Writer) Object(key string, f func()) {
+	w.SObject(key)
+	f()
+	w.EObject()
+}
+
+func (w *Writer) Array(key string, f func()) {
+	w.SArray(key)
+	f()
+	w.EArray()
+}
+
 // Starts a root object
 func (w *Writer) ORoot() {
 	w.end = endObject
