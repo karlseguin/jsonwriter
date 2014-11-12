@@ -4,7 +4,7 @@ Write JSON to an io.Writer. Useful for simple cases where you want to avoid enco
 
 ## Usage
 
-JsonWriter can serialize strings, ints (unsigned/signed, 8/16/32/64), floats, bools and nulls values.
+JsonWriter can serialize strings, ints (unsigned/signed, 8/16/32/64), floats, bools, nulls values and types which implement encoding/json.Marshaler.
 
 
 ```go

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 	"unicode/utf8"
+	"encoding/json"
 )
 
 var (
@@ -135,6 +136,9 @@ func (w *Writer) Value(value interface{}) {
 		w.W.Write([]byte(strconv.FormatFloat(float64(t), 'g', -1, 32)))
 	case float64:
 		w.W.Write([]byte(strconv.FormatFloat(t, 'g', -1, 64)))
+	case json.Marshaler:
+		b, _ := t.MarshalJSON()
+		w.W.Write(b)
 	case string:
 		w.W.Write(quote)
 		w.writeString(t)

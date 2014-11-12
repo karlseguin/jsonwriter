@@ -158,6 +158,14 @@ func (_ *WriterTests) RootArray() {
 	Expect(b.String()).To.Equal(JSON(`[1.2, false, "\n"]`))
 }
 
+func (_ *WriterTests) MarshalJSON() {
+	w, b := n()
+	w.RootObject(func() {
+		w.KeyValue("c", new(Marshalable))
+	})
+	Expect(b.String()).To.Equal(JSON(`{"c":{"ok":true}}`))
+}
+
 func assertValue(value interface{}, expected string) {
 	w, b := n()
 	w.Value(value)
@@ -167,4 +175,13 @@ func assertValue(value interface{}, expected string) {
 func n() (*Writer, *bytes.Buffer) {
 	b := new(bytes.Buffer)
 	return New(b), b
+}
+
+
+type Marshalable struct {
+
+}
+
+func (* Marshalable) MarshalJSON() ([]byte, error) {
+	return []byte(`{"ok":true}`), nil
 }
