@@ -45,12 +45,16 @@ func New(w io.Writer) *Writer {
 	}
 }
 
+// Starts the writing process by creating an object.
+// Should only be called once
 func (w *Writer) RootObject(f func()) {
 	w.W.Write(startObject)
 	f()
 	w.W.Write(endObject)
 }
 
+// Starts the writing process by creating an array.
+// Should only be called once
 func (w *Writer) RootArray(f func()) {
 	w.array = true
 	w.W.Write(startArray)
@@ -58,6 +62,7 @@ func (w *Writer) RootArray(f func()) {
 	w.W.Write(endArray)
 }
 
+// Star an object with the given key
 func (w *Writer) Object(key string, f func()) {
 	w.Key(key)
 	w.first = true
@@ -66,6 +71,7 @@ func (w *Writer) Object(key string, f func()) {
 	w.W.Write(endObject)
 }
 
+// Star an array with the given key
 func (w *Writer) Array(key string, f func()) {
 	w.Key(key)
 	w.first, w.array = true, true
@@ -75,6 +81,7 @@ func (w *Writer) Array(key string, f func()) {
 	w.W.Write(endArray)
 }
 
+// Star an object within an array (a keyless object)
 func (w *Writer) ArrayObject(f func()) {
 	w.first = true
 	w.array = false
@@ -94,7 +101,7 @@ func (w *Writer) Key(key string) {
 }
 
 // value can be a string, byte, u?int(8|16|32|64)?, float(32|64)?,
-// time.Time, bool or nil
+// time.Time, bool, nil or encoding/json.Marshaller
 func (w *Writer) Value(value interface{}) {
 	if w.array {
 		w.Separator()
