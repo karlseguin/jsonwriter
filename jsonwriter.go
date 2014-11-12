@@ -34,7 +34,6 @@ type Writer struct {
 	first bool
 	array bool
 	W     io.Writer
-	end   []byte
 }
 
 // Creates a JsonWriter that writes to the provided io.Writer
@@ -46,27 +45,33 @@ func New(w io.Writer) *Writer {
 }
 
 func (w *Writer) RootObject(f func()) {
-	w.ORoot()
+	w.W.Write(startObject)
 	f()
-	w.ERoot()
+	w.W.Write(endObject)
 }
 
 func (w *Writer) RootArray(f func()) {
-	w.ARoot()
+	w.array = true
+	w.W.Write(startArray)
 	f()
-	w.ERoot()
+	w.W.Write(endArray)
 }
 
 func (w *Writer) Object(key string, f func()) {
-	w.SObject(key)
+	w.Key(key)
+	w.first = true
+	w.W.Write(startObject)
 	f()
-	w.EObject()
+	w.W.Write(endObject)
 }
 
 func (w *Writer) Array(key string, f func()) {
-	w.SArray(key)
+	w.Key(key)
+	w.first, w.array = true, true
+	w.W.Write(startArray)
 	f()
-	w.EArray()
+	w.array = false
+	w.W.Write(endArray)
 }
 
 func (w *Writer) ArrayObject(f func()) {
@@ -76,50 +81,6 @@ func (w *Writer) ArrayObject(f func()) {
 	f()
 	w.W.Write(endObject)
 	w.array = true
-}
-
-// Starts a root object
-func (w *Writer) ORoot() {
-	w.end = endObject
-	w.W.Write(startObject)
-}
-
-// Starts an array object
-func (w *Writer) ARoot() {
-	w.end = endArray
-	w.array = true
-	w.W.Write(startArray)
-}
-
-// Ends the root (used for both ORoot and ARoots)
-func (w *Writer) ERoot() {
-	w.array = false
-	w.W.Write(w.end)
-}
-
-// Starts an object with the specified key
-func (w *Writer) SObject(key string) {
-	w.Key(key)
-	w.first = true
-	w.W.Write(startObject)
-}
-
-// Ends the object
-func (w *Writer) EObject() {
-	w.W.Write(endObject)
-}
-
-// Starts an array with the specified key
-func (w *Writer) SArray(key string) {
-	w.Key(key)
-	w.first, w.array = true, true
-	w.W.Write(startArray)
-}
-
-// Ends the array
-func (w *Writer) EArray() {
-	w.array = false
-	w.W.Write(endArray)
 }
 
 // Writes a key. The key is placed within quotes and ends

@@ -55,118 +55,25 @@ func (_ *WriterTests) WritesATime() {
 
 func (_ *WriterTests) SimpleObject() {
 	w, b := n()
-	w.ORoot()
-	w.KeyValue("spice", "flow")
-	w.ERoot()
+	w.RootObject(func() {
+		w.KeyValue("spice", "flow")
+	})
 	Expect(b.String()).To.Equal(`{"spice":"flow"}`)
 }
 
 func (_ *WriterTests) MultiValueObject() {
 	w, b := n()
-	w.ORoot()
-	w.KeyValue("spice", "flow")
-	w.KeyValue("over", 9000)
-	w.ERoot()
+	w.RootObject(func() {
+		w.KeyValue("spice", "flow")
+		w.KeyValue("over", 9000)
+	})
 	Expect(b.String()).To.Equal(`{"spice":"flow","over":9000}`)
 }
 
 func (_ *WriterTests) NestedObject1() {
 	w, b := n()
-	w.ORoot()
-	w.KeyValue("spice", "flow")
-	w.KeyValue("over", 9000)
-
-	w.SObject("first")
-	w.KeyValue("afraid", true)
-	w.EObject()
-
-	w.SObject("second")
-	w.KeyValue("a", byte(1))
-	w.KeyValue("b", 1.01)
-	w.EObject()
-
-	w.ERoot()
-	Expect(b.String()).To.Equal(JSON(`{
-		"spice":"flow",
-		"over":9000,
-		"first": {"afraid": true},
-		"second": {"a": 1, "b": 1.01}
-	}`))
-}
-
-func (_ *WriterTests) NestedObject2() {
-	w, b := n()
-	w.ORoot()
-	w.SObject("first")
-	w.SObject("second")
-	w.SObject("third")
-	w.EObject()
-	w.EObject()
-	w.EObject()
-	w.ERoot()
-	Expect(b.String()).To.Equal(JSON(`{
-		"first":{
-			"second":{
-				"third":{}
-			}
-		}
-	}`))
-}
-
-func (_ *WriterTests) NestedObject3() {
-	w, b := n()
-	w.ORoot()
-	w.SObject("first")
-	w.SObject("second")
-	w.KeyValue("a", true)
-	w.SObject("third")
-	w.EObject()
-	w.EObject()
-	w.EObject()
-	w.ERoot()
-	Expect(b.String()).To.Equal(JSON(`{
-		"first":{
-			"second":{
-				"a": true,
-				"third":{}
-			}
-		}
-	}`))
-}
-
-func (_ *WriterTests) RootArray() {
-	w, b := n()
-	w.ARoot()
-	w.Value(1)
-	w.Value("b\"")
-	w.Value(nil)
-	w.ERoot()
-	Expect(b.String()).To.Equal(`[1,"b\"",null]`)
-}
-
-func (_ *WriterTests) NestedArray() {
-	w, b := n()
-	w.ORoot()
-	w.SArray("scores")
-	w.Value(3)
-	w.Value(5)
-	w.EArray()
-	w.ERoot()
-	Expect(b.String()).To.Equal(JSON(`{
-		"scores": [3, 5]
-	}`))
-}
-
-func (_ *WriterTests) AlternativeSyntaxObject() {
-	w, b := n()
-
 	w.RootObject(func() {
 		w.KeyValue("power", 9000)
-		w.Array("scores", func() {
-			w.Value(1)
-			w.Value(true)
-			w.Value(nil)
-		})
 		w.Object("atreides", func() {
 			w.KeyValue("name", "leto")
 			w.KeyValue("sister", "ghanima")
@@ -175,7 +82,6 @@ func (_ *WriterTests) AlternativeSyntaxObject() {
 
 	Expect(b.String()).To.Equal(JSON(`{
 		"power": 9000,
-		"scores":[1, true, null],
 		"atreides": {
 			"name": "leto",
 			"sister": "ghanima"
@@ -183,9 +89,36 @@ func (_ *WriterTests) AlternativeSyntaxObject() {
 	}`))
 }
 
+func (_ *WriterTests) NestedObject2() {
+	w, b := n()
+	w.RootObject(func() {
+		w.KeyValue("power", 9000)
+		w.Object("atreides", func() {
+			w.KeyValue("name", "leto")
+			w.KeyValue("sister", "ghanima")
+			w.Object("enemies", func() {
+				w.Array("sorted", func() {
+					w.Value("harkonnen")
+					w.Value("corrino")
+				})
+			})
+		})
+	})
+
+	Expect(b.String()).To.Equal(JSON(`{
+		"power": 9000,
+		"atreides": {
+			"name": "leto",
+			"sister": "ghanima",
+			"enemies": {
+				"sorted": ["harkonnen", "corrino"]
+			}
+		}
+	}`))
+}
+
 func (_ *WriterTests) ArrayObject() {
 	w, b := n()
-
 	w.RootObject(func() {
 		w.Array("scores", func() {
 			w.ArrayObject(func() {
@@ -201,7 +134,6 @@ func (_ *WriterTests) ArrayObject() {
 
 func (_ *WriterTests) ArrayObject2() {
 	w, b := n()
-
 	w.RootObject(func() {
 		w.Array("scores", func() {
 			w.ArrayObject(func() {
@@ -216,15 +148,13 @@ func (_ *WriterTests) ArrayObject2() {
 	}`))
 }
 
-func (_ *WriterTests) AlternativeSyntaxArray() {
+func (_ *WriterTests) RootArray() {
 	w, b := n()
-
 	w.RootArray(func() {
 		w.Value(1.2)
 		w.Value(false)
 		w.Value("\n")
 	})
-
 	Expect(b.String()).To.Equal(JSON(`[1.2, false, "\n"]`))
 }
 
