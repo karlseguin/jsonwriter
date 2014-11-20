@@ -33,6 +33,8 @@ writer.RootObject(func(){
 * `Array(key string, nest func())` - Start an array
 * `ArrayObject(nest func())` - Used to place an object within an array
 
+You can write raw data directly to the writer, circumventing any delimiter insertion or character escaping via the `Raw(data []byte)` method.
+
 # Misc
 
 The [Typed](https://github.com/karlseguin/typed) library provides the opposite functionality: a lightweight approaching to reading JSON data.

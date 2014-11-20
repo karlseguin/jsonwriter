@@ -13,7 +13,7 @@ func Test_Writer(t *testing.T) {
 	Expectify(new(WriterTests), t)
 }
 
-func (_ *WriterTests) WritesAnInt() {
+func (_ WriterTests) WritesAnInt() {
 	assertValue(uint8(1), "1")
 	assertValue(uint16(2), "2")
 	assertValue(uint32(232134), "232134")
@@ -26,34 +26,34 @@ func (_ *WriterTests) WritesAnInt() {
 	assertValue(int(-59922), "-59922")
 }
 
-func (_ *WriterTests) WritesAFloat() {
+func (_ WriterTests) WritesAFloat() {
 	assertValue(float32(1.2393), "1.2393")
 	assertValue(float32(-49493.443), "-49493.44")
 	assertValue(float64(99499449.23949), "9.949944923949e+07")
 	assertValue(float64(-3290123.94994), "-3.29012394994e+06")
 }
 
-func (_ *WriterTests) WritesAString() {
+func (_ WriterTests) WritesAString() {
 	assertValue(`abc`, `"abc"`)
 	assertValue(`ab"cd`, `"ab\"cd"`)
 	assertValue(`💣`, `"💣"`)
 	assertValue("\\it's\n\tOver\r9000!\\ 💣 💣 💣", `"\\it's\n\tOver\r9000!\\ 💣 💣 💣"`)
 }
 
-func (_ *WriterTests) WritesABool() {
+func (_ WriterTests) WritesABool() {
 	assertValue(true, "true")
 	assertValue(false, "false")
 }
 
-func (_ *WriterTests) WritesANull() {
+func (_ WriterTests) WritesANull() {
 	assertValue(nil, "null")
 }
 
-func (_ *WriterTests) WritesATime() {
+func (_ WriterTests) WritesATime() {
 	assertValue(time.Unix(1415677601, 9), `"2014-11-11T10:46:41.000000009+07:00"`)
 }
 
-func (_ *WriterTests) SimpleObject() {
+func (_ WriterTests) SimpleObject() {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("spice", "flow")
@@ -61,7 +61,7 @@ func (_ *WriterTests) SimpleObject() {
 	Expect(b.String()).To.Equal(`{"spice":"flow"}`)
 }
 
-func (_ *WriterTests) MultiValueObject() {
+func (_ WriterTests) MultiValueObject() {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("spice", "flow")
@@ -70,7 +70,7 @@ func (_ *WriterTests) MultiValueObject() {
 	Expect(b.String()).To.Equal(`{"spice":"flow","over":9000}`)
 }
 
-func (_ *WriterTests) NestedObject1() {
+func (_ WriterTests) NestedObject1() {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("power", 9000)
@@ -89,7 +89,7 @@ func (_ *WriterTests) NestedObject1() {
 	}`))
 }
 
-func (_ *WriterTests) NestedObject2() {
+func (_ WriterTests) NestedObject2() {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("power", 9000)
@@ -117,7 +117,7 @@ func (_ *WriterTests) NestedObject2() {
 	}`))
 }
 
-func (_ *WriterTests) ArrayObject() {
+func (_ WriterTests) ArrayObject() {
 	w, b := n()
 	w.RootObject(func() {
 		w.Array("scores", func() {
@@ -132,7 +132,7 @@ func (_ *WriterTests) ArrayObject() {
 	}`))
 }
 
-func (_ *WriterTests) ArrayObject2() {
+func (_ WriterTests) ArrayObject2() {
 	w, b := n()
 	w.RootObject(func() {
 		w.Array("scores", func() {
@@ -148,7 +148,7 @@ func (_ *WriterTests) ArrayObject2() {
 	}`))
 }
 
-func (_ *WriterTests) RootArray() {
+func (_ WriterTests) RootArray() {
 	w, b := n()
 	w.RootArray(func() {
 		w.Value(1.2)
@@ -158,12 +158,20 @@ func (_ *WriterTests) RootArray() {
 	Expect(b.String()).To.Equal(JSON(`[1.2, false, "\n"]`))
 }
 
-func (_ *WriterTests) MarshalJSON() {
+func (_ WriterTests) MarshalJSON() {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("c", new(Marshalable))
 	})
 	Expect(b.String()).To.Equal(JSON(`{"c":{"ok":true}}`))
+}
+
+func (_ WriterTests) Raw() {
+	w, b := n()
+	w.RootObject(func() {
+		w.Raw([]byte(`"test":[true]`))
+	})
+	Expect(b.String()).To.Equal(JSON(`{"test":[true]}`))
 }
 
 func assertValue(value interface{}, expected string) {
@@ -177,11 +185,9 @@ func n() (*Writer, *bytes.Buffer) {
 	return New(b), b
 }
 
-
 type Marshalable struct {
-
 }
 
-func (* Marshalable) MarshalJSON() ([]byte, error) {
+func (*Marshalable) MarshalJSON() ([]byte, error) {
 	return []byte(`{"ok":true}`), nil
 }

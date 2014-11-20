@@ -1,12 +1,12 @@
 package jsonwriter
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
 	"time"
 	"unicode/utf8"
-	"encoding/json"
 )
 
 var (
@@ -157,6 +157,11 @@ func (w *Writer) Value(value interface{}) {
 	default:
 		panic(fmt.Sprintf("unsuported valued type %v", value))
 	}
+}
+
+// Writes the value as-is, leaving delimiters and encoding up to the caller
+func (w *Writer) Raw(data []byte) {
+	w.W.Write(data)
 }
 
 // writes a key: value
