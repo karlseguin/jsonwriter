@@ -9,7 +9,7 @@ JsonWriter can serialize strings, ints (unsigned/signed, 8/16/32/64), floats, bo
 
 ```go
 buffer := new(bytes.Buffer)
-writer := jsonWriter.New(buffer)
+writer := jsonwriter.New(buffer)
 
 writer.RootObject(func(){
   writer.KeyValue("id", "leto")
