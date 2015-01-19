@@ -32,6 +32,7 @@ writer.RootObject(func(){
 * `Object(key string, nest func())` - Start a nested object
 * `Array(key string, nest func())` - Start an array
 * `ArrayObject(nest func())` - Used to place an object within an array
+* `ArrayValues(key string, []string{....})`- Used to write an array. The array can be of any serialiazable type
 
 You can write raw data directly to the writer, circumventing any delimiter insertion or character escaping via the `Raw(data []byte)` method.
 

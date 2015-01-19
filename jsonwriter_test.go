@@ -174,6 +174,22 @@ func (_ WriterTests) Raw() {
 	Expect(b.String()).To.Equal(JSON(`{"test":[true]}`))
 }
 
+func (_ WriterTests) ArrayValuesStrings() {
+	w, b := n()
+	w.RootObject(func() {
+		w.ArrayValues("names", []string{"leto", "jessica", "paul"})
+	})
+	Expect(b.String()).To.Equal(JSON(`{"names":["leto", "jessica", "paul"]}`))
+}
+
+func (_ WriterTests) ArrayValuesInts() {
+	w, b := n()
+	w.RootObject(func() {
+		w.ArrayValues("scores", []int{2, 49299, 9001})
+	})
+	Expect(b.String()).To.Equal(JSON(`{"scores":[2, 49299, 9001]}`))
+}
+
 func assertValue(value interface{}, expected string) {
 	w, b := n()
 	w.Value(value)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"reflect"
 	"strconv"
 	"time"
 	"unicode/utf8"
@@ -89,6 +90,24 @@ func (w *Writer) ArrayObject(f func()) {
 	f()
 	w.W.Write(endObject)
 	w.array = true
+}
+
+// Writes an array with the given array of values
+// (values must be an array or a slice)
+func (w *Writer) ArrayValues(key string, values interface{}) {
+	w.Key(key)
+	w.first, w.array = true, true
+	w.W.Write(startArray)
+
+	vo := reflect.ValueOf(values)
+	kind := vo.Kind()
+	if kind == reflect.Array || kind == reflect.Slice {
+		for i, l := 0, vo.Len(); i < l; i++ {
+			w.Value(vo.Index(i).Interface())
+		}
+	}
+	w.array = false
+	w.W.Write(endArray)
 }
 
 // Writes a key. The key is placed within quotes and ends
