@@ -84,6 +84,7 @@ func (w *Writer) Array(key string, f func()) {
 
 // Star an object within an array (a keyless object)
 func (w *Writer) ArrayObject(f func()) {
+	w.Separator()
 	w.first = true
 	w.array = false
 	w.W.Write(startObject)

@@ -138,13 +138,18 @@ func (_ WriterTests) ArrayObject2() {
 		w.Array("scores", func() {
 			w.ArrayObject(func() {
 				w.KeyValue("points", 32)
+				w.KeyValue("enabled", true)
+			})
+			w.ArrayObject(func() {
+				w.KeyValue("points", 9002)
+				w.KeyValue("enabled", false)
 			})
 			w.Value(nil)
 		})
 	})
 
 	Expect(b.String()).To.Equal(JSON(`{
-		"scores":[{"points":32}, null]
+		"scores":[{"points":32, "enabled":true}, {"points": 9002, "enabled": false}, null]
 	}`))
 }
 
