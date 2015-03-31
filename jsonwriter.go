@@ -191,6 +191,22 @@ func (w *Writer) KeyValue(key string, value interface{}) {
 	w.Value(value)
 }
 
+// writes a key: value where value is a string
+// This is an optimized Write method
+func (w *Writer) KeyString(key string, value string) {
+	w.Key(key)
+	w.W.Write(quote)
+	w.writeString(value)
+	w.W.Write(quote)
+}
+
+// writes a key: value where value is a int
+// This is an optimized Write method
+func (w *Writer) KeyInt(key string, value int) {
+	w.Key(key)
+	w.W.Write([]byte(strconv.Itoa(value)))
+}
+
 func (w *Writer) Separator() {
 	if w.first == false {
 		w.W.Write(comma)
