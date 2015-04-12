@@ -207,6 +207,17 @@ func (w *Writer) KeyInt(key string, value int) {
 	w.W.Write([]byte(strconv.Itoa(value)))
 }
 
+// writes a key: value where value is a bool
+// This is an optimized Write method
+func (w *Writer) KeyBool(key string, value bool) {
+	w.Key(key)
+	if value {
+		w.W.Write(_true)
+	} else {
+		w.W.Write(_false)
+	}
+}
+
 func (w *Writer) Separator() {
 	if w.first == false {
 		w.W.Write(comma)
