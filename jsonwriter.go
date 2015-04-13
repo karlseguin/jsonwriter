@@ -191,6 +191,13 @@ func (w *Writer) KeyValue(key string, value interface{}) {
 	w.Value(value)
 }
 
+// writes a key: value
+// write a key'd raw value
+func (w *Writer) KeyRaw(key string, data []byte) {
+	w.Key(key)
+	w.W.Write(data)
+}
+
 // writes a key: value where value is a string
 // This is an optimized Write method
 func (w *Writer) KeyString(key string, value string) {
