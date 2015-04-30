@@ -269,3 +269,9 @@ L:
 		w.W.Write([]byte(s[start:end]))
 	}
 }
+
+func (w *Writer) Reset() {
+	w.depth = 0
+	w.first = true
+	w.array = false
+}
