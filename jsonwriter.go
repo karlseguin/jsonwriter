@@ -69,6 +69,7 @@ func (w *Writer) Object(key string, f func()) {
 	w.first = true
 	w.W.Write(startObject)
 	f()
+	w.first = false
 	w.W.Write(endObject)
 }
 
@@ -78,7 +79,7 @@ func (w *Writer) Array(key string, f func()) {
 	w.first, w.array = true, true
 	w.W.Write(startArray)
 	f()
-	w.array = false
+	w.first, w.array = false, false
 	w.W.Write(endArray)
 }
 

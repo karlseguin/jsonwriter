@@ -195,6 +195,17 @@ func (_ WriterTests) ArrayValuesInts() {
 	Expect(b.String()).To.Equal(JSON(`{"scores":[2, 49299, 9001]}`))
 }
 
+func (_ WriterTests) BoolAfterArray() {
+	w, b := n()
+	w.RootObject(func() {
+		w.Array("scores", func() {
+			w.Raw([]byte("123"))
+		})
+		w.KeyBool("more", false)
+	})
+	Expect(b.String()).To.Equal(JSON(`{"scores":[123],"more":false}`))
+}
+
 func assertValue(value interface{}, expected string) {
 	w, b := n()
 	w.Value(value)
