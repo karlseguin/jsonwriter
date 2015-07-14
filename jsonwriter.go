@@ -180,6 +180,15 @@ func (w *Writer) Value(value interface{}) {
 	}
 }
 
+// Writes raw data to an array as-is, leaving encoding up to the caller
+func (w *Writer) RawValue(data []byte) {
+	if w.array {
+		w.Separator()
+	}
+
+	w.W.Write(data)
+}
+
 // Writes the value as-is, leaving delimiters and encoding up to the caller
 func (w *Writer) Raw(data []byte) {
 	w.W.Write(data)

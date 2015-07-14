@@ -2,9 +2,10 @@ package jsonwriter
 
 import (
 	"bytes"
-	. "github.com/karlseguin/expect"
 	"testing"
 	"time"
+
+	. "github.com/karlseguin/expect"
 )
 
 type WriterTests struct{}
@@ -169,6 +170,23 @@ func (_ WriterTests) MarshalJSON() {
 		w.KeyValue("c", new(Marshalable))
 	})
 	Expect(b.String()).To.Equal(JSON(`{"c":{"ok":true}}`))
+}
+
+func (_ WriterTests) RawValue1() {
+	w, b := n()
+	w.RootArray(func() {
+		w.RawValue([]byte(`"abc"`))
+	})
+	Expect(b.String()).To.Equal(JSON(`["abc"]`))
+}
+
+func (_ WriterTests) RawValue2() {
+	w, b := n()
+	w.RootArray(func() {
+		w.RawValue([]byte(`"abc"`))
+		w.RawValue([]byte(`"def"`))
+	})
+	Expect(b.String()).To.Equal(JSON(`["abc", "def"]`))
 }
 
 func (_ WriterTests) Raw() {
