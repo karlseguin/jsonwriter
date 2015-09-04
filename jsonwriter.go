@@ -235,6 +235,20 @@ func (w *Writer) KeyBool(key string, value bool) {
 	}
 }
 
+// writes a key: value where value is a bool
+// This is an optimized Write method
+func (w *Writer) KeyFloat(key string, value float32) {
+	w.Key(key)
+	w.W.Write([]byte(strconv.FormatFloat(float64(t), 'g', -1, 32)))
+}
+
+// writes a key: value where value is a bool
+// This is an optimized Write method
+func (w *Writer) KeyFloat64(key string, value float64) {
+	w.Key(key)
+	w.W.Write([]byte(strconv.FormatFloat(value, 'g', -1, 64)))
+}
+
 func (w *Writer) Separator() {
 	if w.first == false {
 		w.W.Write(comma)
