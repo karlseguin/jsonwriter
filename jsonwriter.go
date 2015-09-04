@@ -57,7 +57,9 @@ func (w *Writer) RootObject(f func()) {
 // Starts the writing process by creating an array.
 // Should only be called once
 func (w *Writer) RootArray(f func()) {
+	w.Separator()
 	w.array = true
+	w.first = true
 	w.W.Write(startArray)
 	f()
 	w.W.Write(endArray)
@@ -141,23 +143,23 @@ func (w *Writer) Value(value interface{}) {
 			w.W.Write(_false)
 		}
 	case uint8:
-		w.W.Write([]byte(strconv.FormatUint(uint64(t), 10)))
+		w.Int(int(t))
 	case uint16:
-		w.W.Write([]byte(strconv.FormatUint(uint64(t), 10)))
+		w.Int(int(t))
 	case uint32:
-		w.W.Write([]byte(strconv.FormatUint(uint64(t), 10)))
+		w.Int(int(t))
 	case uint:
 		w.W.Write([]byte(strconv.FormatUint(uint64(t), 10)))
 	case uint64:
 		w.W.Write([]byte(strconv.FormatUint(t, 10)))
 	case int8:
-		w.W.Write([]byte(strconv.FormatInt(int64(t), 10)))
+		w.Int(int(t))
 	case int16:
-		w.W.Write([]byte(strconv.FormatInt(int64(t), 10)))
+		w.Int(int(t))
 	case int32:
-		w.W.Write([]byte(strconv.FormatInt(int64(t), 10)))
+		w.Int(int(t))
 	case int:
-		w.W.Write([]byte(strconv.FormatInt(int64(t), 10)))
+		w.Int(int(t))
 	case int64:
 		w.W.Write([]byte(strconv.FormatInt(t, 10)))
 	case float32:
@@ -168,9 +170,7 @@ func (w *Writer) Value(value interface{}) {
 		b, _ := t.MarshalJSON()
 		w.W.Write(b)
 	case string:
-		w.W.Write(quote)
-		w.writeString(t)
-		w.W.Write(quote)
+		w.String(t)
 	case time.Time:
 		w.W.Write(quote)
 		w.writeString(t.Format(time.RFC3339Nano))
@@ -178,6 +178,16 @@ func (w *Writer) Value(value interface{}) {
 	default:
 		panic(fmt.Sprintf("unsuported valued type %v", value))
 	}
+}
+
+func (w *Writer) Int(value int) {
+	w.W.Write([]byte(strconv.Itoa(value)))
+}
+
+func (w *Writer) String(value string) {
+	w.W.Write(quote)
+	w.writeString(value)
+	w.W.Write(quote)
 }
 
 // Writes raw data to an array as-is, leaving encoding up to the caller
