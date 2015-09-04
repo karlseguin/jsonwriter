@@ -51,7 +51,7 @@ func (_ WriterTests) WritesANull() {
 }
 
 func (_ WriterTests) WritesATime() {
-	assertValue(time.Unix(1415677601, 9), `"2014-11-11T10:46:41.000000009+07:00"`)
+	assertValue(time.Unix(1415677601, 9).UTC(), `"2014-11-11T03:46:41.000000009Z"`)
 }
 
 func (_ WriterTests) SimpleObject() {
