@@ -224,6 +224,22 @@ func (_ WriterTests) BoolAfterArray() {
 	Expect(b.String()).To.Equal(JSON(`{"scores":[123],"more":false}`))
 }
 
+func (_ WriterTests) Subarray() {
+	w, b := n()
+	w.RootObject(func() {
+		w.Array("scores", func() {
+			w.SubArray(func() {
+				w.Value(1)
+				w.Value(2)
+			})
+			w.SubArray(func() {
+				w.Value(3)
+			})
+		})
+	})
+	Expect(b.String()).To.Equal(JSON(`{"scores":[[1,2],[3]]}`))
+}
+
 func assertValue(value interface{}, expected string) {
 	w, b := n()
 	w.Value(value)

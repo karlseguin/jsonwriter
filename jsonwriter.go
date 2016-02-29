@@ -114,6 +114,11 @@ func (w *Writer) ArrayValues(key string, values interface{}) {
 	w.W.Write(endArray)
 }
 
+// used to write an array of arrays
+func (w *Writer) SubArray(f func()) {
+	w.RootArray(f)
+}
+
 // Writes a key. The key is placed within quotes and ends
 // with a colon
 func (w *Writer) Key(key string) {
