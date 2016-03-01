@@ -204,6 +204,11 @@ func (w *Writer) RawValue(data []byte) {
 	w.W.Write(data)
 }
 
+// Writes raw data, leaving encoding and field separation to the caller
+func (w *Writer) Literal(data []byte) {
+	w.W.Write(data)
+}
+
 // Writes the value as-is, leaving delimiters and encoding up to the caller
 func (w *Writer) Raw(data []byte) {
 	w.W.Write(data)
