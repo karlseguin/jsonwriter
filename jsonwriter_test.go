@@ -39,6 +39,7 @@ func (_ WriterTests) WritesAString() {
 	assertValue(`ab"cd`, `"ab\"cd"`)
 	assertValue(`💣`, `"💣"`)
 	assertValue("\\it's\n\tOver\r9000!\\ 💣 💣 💣", `"\\it's\n\tOver\r9000!\\ 💣 💣 💣"`)
+	assertValue("vertical\vtab", `"vertical\u000btab"`)
 }
 
 func (_ WriterTests) WritesABool() {

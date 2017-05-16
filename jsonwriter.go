@@ -29,6 +29,7 @@ var (
 	escapedNL    = []byte(`\n`)
 	escapedLF    = []byte(`\r`)
 	escapedTab   = []byte(`\t`)
+	escapedVTab  = []byte(`\u000b`)
 )
 
 type Writer struct {
@@ -297,6 +298,8 @@ L:
 			special = escapedLF
 		case '\t':
 			special = escapedTab
+		case '\v':
+			special = escapedVTab
 		default:
 			end += utf8.RuneLen(r)
 			continue L
