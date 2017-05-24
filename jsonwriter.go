@@ -29,7 +29,33 @@ var (
 	escapedNL    = []byte(`\n`)
 	escapedLF    = []byte(`\r`)
 	escapedTab   = []byte(`\t`)
-	escapedVTab  = []byte(`\u000b`)
+	escapedNull  = []byte(`\u0000`)
+	escapedSOH   = []byte(`\u0001`)
+	escapedSTX   = []byte(`\u0002`)
+	escapedETX   = []byte(`\u0003`)
+	escapedEOT   = []byte(`\u0004`)
+	escapedENQ   = []byte(`\u0005`)
+	escapedACK   = []byte(`\u0006`)
+	escapedBEL   = []byte(`\u0007`)
+	escapedVT    = []byte(`\u000b`)
+	escapedSO    = []byte(`\u000e`)
+	escapedSI    = []byte(`\u000f`)
+	escapedDLE   = []byte(`\u0010`)
+	escapedDC1   = []byte(`\u0011`)
+	escapedDC2   = []byte(`\u0012`)
+	escapedDC3   = []byte(`\u0013`)
+	escapedDC4   = []byte(`\u0014`)
+	escapedNAK   = []byte(`\u0015`)
+	escapedSYN   = []byte(`\u0016`)
+	escapedETB   = []byte(`\u0017`)
+	escapedCAN   = []byte(`\u0018`)
+	escapedEM    = []byte(`\u0019`)
+	escapedSUB   = []byte(`\u001a`)
+	escapedESC   = []byte(`\u001b`)
+	escapedFS    = []byte(`\u001c`)
+	escapedGS    = []byte(`\u001d`)
+	escapedRS    = []byte(`\u001e`)
+	escapedUS    = []byte(`\u001f`)
 )
 
 type Writer struct {
@@ -298,8 +324,60 @@ L:
 			special = escapedLF
 		case '\t':
 			special = escapedTab
-		case '\v':
-			special = escapedVTab
+		case 0x00:
+			special = escapedNull
+		case 0x01:
+			special = escapedSOH
+		case 0x02:
+			special = escapedSTX
+		case 0x03:
+			special = escapedETX
+		case 0x04:
+			special = escapedEOT
+		case 0x05:
+			special = escapedENQ
+		case 0x06:
+			special = escapedACK
+		case 0x07:
+			special = escapedBEL
+		case 0x0b:
+			special = escapedVT
+		case 0x0e:
+			special = escapedSO
+		case 0x0f:
+			special = escapedSI
+		case 0x10:
+			special = escapedDLE
+		case 0x11:
+			special = escapedDC1
+		case 0x12:
+			special = escapedDC2
+		case 0x13:
+			special = escapedDC3
+		case 0x14:
+			special = escapedDC4
+		case 0x15:
+			special = escapedNAK
+		case 0x16:
+			special = escapedSYN
+		case 0x17:
+			special = escapedETB
+		case 0x18:
+			special = escapedCAN
+		case 0x19:
+			special = escapedEM
+		case 0x1a:
+			special = escapedSUB
+		case 0x1b:
+			special = escapedESC
+		case 0x1c:
+			special = escapedFS
+		case 0x1d:
+			special = escapedGS
+		case 0x1e:
+			special = escapedRS
+		case 0x1f:
+			special = escapedUS
 		default:
 			end += utf8.RuneLen(r)
 			continue L
