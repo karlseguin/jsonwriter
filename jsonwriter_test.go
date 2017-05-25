@@ -2,6 +2,7 @@ package jsonwriter
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 	"time"
 
@@ -39,7 +40,25 @@ func (_ WriterTests) WritesAString() {
 	assertValue(`ab"cd`, `"ab\"cd"`)
 	assertValue(`💣`, `"💣"`)
 	assertValue("\\it's\n\tOver\r9000!\\ 💣 💣 💣", `"\\it's\n\tOver\r9000!\\ 💣 💣 💣"`)
-	assertValue("vertical\vtab", `"vertical\u000btab"`)
+
+	for c := 0x00; c < 0x20; c++ {
+		result := fmt.Sprintf("%c", c)
+
+		switch c {
+		case '\b':
+			assertValue(result, `"\b"`)
+		case '\t':
+			assertValue(result, `"\t"`)
+		case '\n':
+			assertValue(result, `"\n"`)
+		case '\f':
+			assertValue(result, `"\f"`)
+		case '\r':
+			assertValue(result, `"\r"`)
+		default:
+			assertValue(result, fmt.Sprintf(`"\u%04x"`, c))
+		}
+	}
 }
 
 func (_ WriterTests) WritesABool() {
