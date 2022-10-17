@@ -92,7 +92,7 @@ func (w *Writer) RootArray(f func()) {
 	w.W.Write(endArray)
 }
 
-// Star an object with the given key
+// Starts an object with the given key
 func (w *Writer) Object(key string, f func()) {
 	w.Key(key)
 	w.first = true
@@ -102,7 +102,7 @@ func (w *Writer) Object(key string, f func()) {
 	w.W.Write(endObject)
 }
 
-// Star an array with the given key
+// Starts an array with the given key
 func (w *Writer) Array(key string, f func()) {
 	w.Key(key)
 	w.first, w.array = true, true
@@ -112,7 +112,7 @@ func (w *Writer) Array(key string, f func()) {
 	w.W.Write(endArray)
 }
 
-// Star an object within an array (a keyless object)
+// Starts an object within an array (a keyless object)
 func (w *Writer) ArrayObject(f func()) {
 	w.Separator()
 	w.first = true
