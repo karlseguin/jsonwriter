@@ -307,6 +307,22 @@ func (w *Writer) KeyFloat64(key string, value float64) {
 	w.W.Write([]byte(strconv.FormatFloat(value, 'g', -1, 64)))
 }
 
+func (w *Writer) KeyReader(key string, value io.Reader) (cnt int64, err error) {
+	w.Key(key)
+
+	if value == nil {
+		w.W.Write(null)
+		return
+	}
+
+	w.W.Write(quote)
+	defer w.W.Write(quote)
+
+	encoder := base64.NewEncoder(base64.StdEncoding, w.W)
+	defer encoder.Close()
+	return io.Copy(encoder, value)
+}
+
 func (w *Writer) Separator() {
 	if w.first == false {
 		w.W.Write(comma)

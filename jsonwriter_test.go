@@ -67,8 +67,24 @@ func Test_WritesATime(t *testing.T) {
 }
 
 func Test_WritesAReader(t *testing.T) {
-	b := bytes.NewBuffer([]byte("1234"))
-	assertValue(t, b, `"MTIzNA=="`)
+	buffer := bytes.NewBuffer([]byte("1234"))
+	assertValue(t, buffer, `"MTIzNA=="`)
+}
+
+func Test_KeyReader(t *testing.T) {
+	buffer := bytes.NewBuffer([]byte("12345"))
+	w, b := n()
+	w.RootObject(func() {
+		w.KeyReader("data", buffer)
+	})
+	assertString(t, b.String(), `{"data":"MTIzNDU="}`)
+}
+func Test_KeyNullReader(t *testing.T) {
+	w, b := n()
+	w.RootObject(func() {
+		w.KeyReader("data", nil)
+	})
+	assertString(t, b.String(), `{"data":null}`)
 }
 
 func Test_SimpleObject(t *testing.T) {
