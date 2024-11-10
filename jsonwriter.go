@@ -211,10 +211,12 @@ func (w *Writer) Value(value any) {
 	default:
 		if reader, ok := value.(io.Reader); ok {
 			encoder := base64.NewEncoder(base64.StdEncoding, w.W)
+
 			w.W.Write(quote)
+			defer w.W.Write(quote)
+			defer encoder.Close()
+
 			io.Copy(encoder, reader)
-			encoder.Close()
-			w.W.Write(quote)
 		} else {
 			panic(fmt.Sprintf("unsuported valued type %v", value))
 		}
