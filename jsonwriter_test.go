@@ -5,93 +5,85 @@ import (
 	"fmt"
 	"testing"
 	"time"
-
-	. "github.com/karlseguin/expect"
 )
 
-type WriterTests struct{}
-
-func Test_Writer(t *testing.T) {
-	Expectify(new(WriterTests), t)
+func Test_WritesAnInt(t *testing.T) {
+	assertValue(t, uint8(1), "1")
+	assertValue(t, uint16(2), "2")
+	assertValue(t, uint32(232134), "232134")
+	assertValue(t, uint64(432434), "432434")
+	assertValue(t, uint(5), "5")
+	assertValue(t, int8(-3), "-3")
+	assertValue(t, int16(-16), "-16")
+	assertValue(t, int32(-31), "-31")
+	assertValue(t, int64(-4343), "-4343")
+	assertValue(t, int(-59922), "-59922")
 }
 
-func (_ WriterTests) WritesAnInt() {
-	assertValue(uint8(1), "1")
-	assertValue(uint16(2), "2")
-	assertValue(uint32(232134), "232134")
-	assertValue(uint64(432434), "432434")
-	assertValue(uint(5), "5")
-	assertValue(int8(-3), "-3")
-	assertValue(int16(-16), "-16")
-	assertValue(int32(-31), "-31")
-	assertValue(int64(-4343), "-4343")
-	assertValue(int(-59922), "-59922")
+func Test_WritesAFloat(t *testing.T) {
+	assertValue(t, float32(1.2393), "1.2393")
+	assertValue(t, float32(-49493.443), "-49493.44")
+	assertValue(t, float64(99499449.23949), "9.949944923949e+07")
+	assertValue(t, float64(-3290123.94994), "-3.29012394994e+06")
 }
 
-func (_ WriterTests) WritesAFloat() {
-	assertValue(float32(1.2393), "1.2393")
-	assertValue(float32(-49493.443), "-49493.44")
-	assertValue(float64(99499449.23949), "9.949944923949e+07")
-	assertValue(float64(-3290123.94994), "-3.29012394994e+06")
-}
-
-func (_ WriterTests) WritesAString() {
-	assertValue(`abc`, `"abc"`)
-	assertValue(`ab"cd`, `"ab\"cd"`)
-	assertValue(`💣`, `"💣"`)
-	assertValue("\\it's\n\tOver\r9000!\\ 💣 💣 💣", `"\\it's\n\tOver\r9000!\\ 💣 💣 💣"`)
+func Test_WritesAString(t *testing.T) {
+	assertValue(t, `abc`, `"abc"`)
+	assertValue(t, `ab"cd`, `"ab\"cd"`)
+	assertValue(t, `💣`, `"💣"`)
+	assertValue(t, "\\it's\n\tOver\r9000!\\ 💣 💣 💣", `"\\it's\n\tOver\r9000!\\ 💣 💣 💣"`)
 
 	for c := 0x00; c < 0x20; c++ {
 		result := fmt.Sprintf("%c", c)
 
 		switch c {
 		case '\b':
-			assertValue(result, `"\b"`)
+			assertValue(t, result, `"\b"`)
 		case '\t':
-			assertValue(result, `"\t"`)
+			assertValue(t, result, `"\t"`)
 		case '\n':
-			assertValue(result, `"\n"`)
+			assertValue(t, result, `"\n"`)
 		case '\f':
-			assertValue(result, `"\f"`)
+			assertValue(t, result, `"\f"`)
 		case '\r':
-			assertValue(result, `"\r"`)
+			assertValue(t, result, `"\r"`)
 		default:
-			assertValue(result, fmt.Sprintf(`"\u%04x"`, c))
+			assertValue(t, result, fmt.Sprintf(`"\u%04x"`, c))
 		}
 	}
 }
 
-func (_ WriterTests) WritesABool() {
-	assertValue(true, "true")
-	assertValue(false, "false")
+func Test_WritesABool(t *testing.T) {
+	assertValue(t, true, "true")
+	assertValue(t, false, "false")
 }
 
-func (_ WriterTests) WritesANull() {
-	assertValue(nil, "null")
+func Test_WritesANull(t *testing.T) {
+	assertValue(t, nil, "null")
 }
 
-func (_ WriterTests) WritesATime() {
-	assertValue(time.Unix(1415677601, 9).UTC(), `"2014-11-11T03:46:41.000000009Z"`)
+func Test_WritesATime(t *testing.T) {
+	assertValue(t, time.Unix(1415677601, 9).UTC(), `"2014-11-11T03:46:41.000000009Z"`)
 }
 
-func (_ WriterTests) SimpleObject() {
+func Test_SimpleObject(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("spice", "flow")
 	})
-	Expect(b.String()).To.Equal(`{"spice":"flow"}`)
+	assertString(t, b.String(), `{"spice":"flow"}`)
 }
 
-func (_ WriterTests) MultiValueObject() {
+func Test_MultiValueObject(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("spice", "flow")
 		w.KeyValue("over", 9000)
 	})
-	Expect(b.String()).To.Equal(`{"spice":"flow","over":9000}`)
+	assertString(t, b.String(), `{"spice":"flow","over":9000}`)
 }
 
-func (_ WriterTests) NestedObject1() {
+func Test_NestedObject1(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("power", 9000)
@@ -101,16 +93,10 @@ func (_ WriterTests) NestedObject1() {
 		})
 	})
 
-	Expect(b.String()).To.Equal(JSON(`{
-		"power": 9000,
-		"atreides": {
-			"name": "leto",
-			"sister": "ghanima"
-		}
-	}`))
+	assertString(t, b.String(), `{"power":9000,"atreides":{"name":"leto","sister":"ghanima"}}`)
 }
 
-func (_ WriterTests) NestedObject2() {
+func Test_NestedObject2(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("power", 9000)
@@ -126,19 +112,10 @@ func (_ WriterTests) NestedObject2() {
 		})
 	})
 
-	Expect(b.String()).To.Equal(JSON(`{
-		"power": 9000,
-		"atreides": {
-			"name": "leto",
-			"sister": "ghanima",
-			"enemies": {
-				"sorted": ["harkonnen", "corrino"]
-			}
-		}
-	}`))
+	assertString(t, b.String(), `{"power":9000,"atreides":{"name":"leto","sister":"ghanima","enemies":{"sorted":["harkonnen","corrino"]}}}`)
 }
 
-func (_ WriterTests) ArrayObject() {
+func Test_ArrayObject(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.Array("scores", func() {
@@ -148,12 +125,10 @@ func (_ WriterTests) ArrayObject() {
 		})
 	})
 
-	Expect(b.String()).To.Equal(JSON(`{
-		"scores":[{"points":32}]
-	}`))
+	assertString(t, b.String(), `{"scores":[{"points":32}]}`)
 }
 
-func (_ WriterTests) ArrayObject2() {
+func Test_ArrayObject2(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.Array("scores", func() {
@@ -169,71 +144,69 @@ func (_ WriterTests) ArrayObject2() {
 		})
 	})
 
-	Expect(b.String()).To.Equal(JSON(`{
-		"scores":[{"points":32, "enabled":true}, {"points": 9002, "enabled": false}, null]
-	}`))
+	assertString(t, b.String(), `{"scores":[{"points":32,"enabled":true},{"points":9002,"enabled":false},null]}`)
 }
 
-func (_ WriterTests) RootArray() {
+func Test_RootArray(t *testing.T) {
 	w, b := n()
 	w.RootArray(func() {
 		w.Value(1.2)
 		w.Value(false)
 		w.Value("\n")
 	})
-	Expect(b.String()).To.Equal(JSON(`[1.2, false, "\n"]`))
+	assertString(t, b.String(), `[1.2,false,"\n"]`)
 }
 
-func (_ WriterTests) MarshalJSON() {
+func Test_MarshalJSON(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.KeyValue("c", new(Marshalable))
 	})
-	Expect(b.String()).To.Equal(JSON(`{"c":{"ok":true}}`))
+	assertString(t, b.String(), `{"c":{"ok":true}}`)
 }
 
-func (_ WriterTests) RawValue1() {
+func Test_RawValue1(t *testing.T) {
 	w, b := n()
 	w.RootArray(func() {
 		w.RawValue([]byte(`"abc"`))
 	})
-	Expect(b.String()).To.Equal(JSON(`["abc"]`))
+	assertString(t, b.String(), `["abc"]`)
 }
 
-func (_ WriterTests) RawValue2() {
+func Test_RawValue2(t *testing.T) {
 	w, b := n()
 	w.RootArray(func() {
 		w.RawValue([]byte(`"abc"`))
 		w.RawValue([]byte(`"def"`))
 	})
-	Expect(b.String()).To.Equal(JSON(`["abc", "def"]`))
+	assertString(t, b.String(), `["abc","def"]`)
 }
 
-func (_ WriterTests) Raw() {
+func Test_Raw(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.Raw([]byte(`"test":[true]`))
 	})
-	Expect(b.String()).To.Equal(JSON(`{"test":[true]}`))
+	assertString(t, b.String(), `{"test":[true]}`)
 }
 
-func (_ WriterTests) ArrayValuesStrings() {
+func Test_ArrayValuesStrings(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.ArrayValues("names", []string{"leto", "jessica", "paul"})
 	})
-	Expect(b.String()).To.Equal(JSON(`{"names":["leto", "jessica", "paul"]}`))
+	assertString(t, b.String(), `{"names":["leto","jessica","paul"]}`)
 }
 
-func (_ WriterTests) ArrayValuesInts() {
+func Test_ArrayValuesInts(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.ArrayValues("scores", []int{2, 49299, 9001})
 	})
-	Expect(b.String()).To.Equal(JSON(`{"scores":[2, 49299, 9001]}`))
+	assertString(t, b.String(), `{"scores":[2,49299,9001]}`)
 }
 
-func (_ WriterTests) BoolAfterArray() {
+func Test_BoolAfterArray(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.Array("scores", func() {
@@ -241,10 +214,10 @@ func (_ WriterTests) BoolAfterArray() {
 		})
 		w.KeyBool("more", false)
 	})
-	Expect(b.String()).To.Equal(JSON(`{"scores":[123],"more":false}`))
+	assertString(t, b.String(), `{"scores":[123],"more":false}`)
 }
 
-func (_ WriterTests) Subarray() {
+func Test_Subarray(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {
 		w.Array("scores", func() {
@@ -257,13 +230,21 @@ func (_ WriterTests) Subarray() {
 			})
 		})
 	})
-	Expect(b.String()).To.Equal(JSON(`{"scores":[[1,2],[3]]}`))
+	assertString(t, b.String(), `{"scores":[[1,2],[3]]}`)
 }
 
-func assertValue(value interface{}, expected string) {
+func assertValue(t *testing.T, value interface{}, expected string) {
+	t.Helper()
 	w, b := n()
 	w.Value(value)
-	Expect(b.String()).To.Equal(expected)
+	assertString(t, b.String(), expected)
+}
+
+func assertString(t *testing.T, value string, expected string) {
+	t.Helper()
+	if value != expected {
+		t.Errorf("Expected '%s', got '%s'", expected, value)
+	}
 }
 
 func n() (*Writer, *bytes.Buffer) {
