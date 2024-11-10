@@ -66,6 +66,11 @@ func Test_WritesATime(t *testing.T) {
 	assertValue(t, time.Unix(1415677601, 9).UTC(), `"2014-11-11T03:46:41.000000009Z"`)
 }
 
+func Test_WritesAReader(t *testing.T) {
+	b := bytes.NewBuffer([]byte("1234"))
+	assertValue(t, b, `"MTIzNA=="`)
+}
+
 func Test_SimpleObject(t *testing.T) {
 	w, b := n()
 	w.RootObject(func() {

@@ -1,6 +1,7 @@
 package jsonwriter
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -208,7 +209,15 @@ func (w *Writer) Value(value any) {
 		w.writeString(t.Format(time.RFC3339Nano))
 		w.W.Write(quote)
 	default:
-		panic(fmt.Sprintf("unsuported valued type %v", value))
+		if reader, ok := value.(io.Reader); ok {
+			encoder := base64.NewEncoder(base64.StdEncoding, w.W)
+			w.W.Write(quote)
+			io.Copy(encoder, reader)
+			encoder.Close()
+			w.W.Write(quote)
+		} else {
+			panic(fmt.Sprintf("unsuported valued type %v", value))
+		}
 	}
 }
 
