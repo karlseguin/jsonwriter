@@ -125,7 +125,7 @@ func (w *Writer) ArrayObject(f func()) {
 
 // Writes an array with the given array of values
 // (values must be an array or a slice)
-func (w *Writer) ArrayValues(key string, values interface{}) {
+func (w *Writer) ArrayValues(key string, values any) {
 	w.Key(key)
 	w.first, w.array = true, true
 	w.W.Write(startArray)
@@ -157,7 +157,7 @@ func (w *Writer) Key(key string) {
 
 // value can be a string, byte, u?int(8|16|32|64)?, float(32|64)?,
 // time.Time, bool, nil or encoding/json.Marshaller
-func (w *Writer) Value(value interface{}) {
+func (w *Writer) Value(value any) {
 	if w.array {
 		w.Separator()
 	}
@@ -243,7 +243,7 @@ func (w *Writer) Raw(data []byte) {
 
 // writes a key: value
 // This is the same as calling WriteKey(key) followe by WriteValue(value)
-func (w *Writer) KeyValue(key string, value interface{}) {
+func (w *Writer) KeyValue(key string, value any) {
 	w.Key(key)
 	w.Value(value)
 }

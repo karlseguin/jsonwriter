@@ -27,8 +27,8 @@ writer.RootObject(func(){
 
 * `RootObject(nest func())` - Generate a document as an object
 * `RootArray(nest func())` - Generate a document as an array
-* `KeyValue(key string, value interface)` - Write the key value pair
-* `Value(value interface)` - Write the value (only useful within an array)
+* `KeyValue(key string, value any)` - Write the key value pair
+* `Value(value any)` - Write the value (only useful within an array)
 * `Object(key string, nest func())` - Start a nested object
 * `Array(key string, nest func())` - Start an array
 * `ArrayObject(nest func())` - Used to place an object within an array
